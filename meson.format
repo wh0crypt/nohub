@@ -1,0 +1,24 @@
+[style]
+indent = 4
+max_line_length = 80
+continuation_indent = 4
+final_newline = true
+
+[wrapping]
+wrap_function_args = true
+wrap_arrays = true
+wrap_dicts = true
+wrap_dict_items = true
+
+[blank_lines]
+max_consecutive_blank_lines = 1
+
+[spacing]
+before_colon = false
+after_colon = true
+before_comma = false
+after_comma = true
+
+[comments]
+max_line_length = 80
+inline_comment_spacing = 2
