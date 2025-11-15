@@ -77,13 +77,13 @@ void print_usage(const std::string_view progname) {
 void print_help(const std::string_view progname) {
     print_usage(progname);
     std::printf("\nOptions:\n"
-                "-h, --help\t\tShow this help message and exit.\n"
-                "<mode>\tSet the program mode (client or server).\n"
+                "-h, --help\tShow this help message and exit.\n"
+                "<mode>\t\tSet the program mode (client or server).\n"
                 "<ip>\t\tSet the IP address to bind/connect to.\n"
                 "<port>\t\tSet the port number to bind/connect to.\n");
     std::printf("\nExamples:\n"
-                "\t%sserver 4444\n"
-                "\t%sclient 127.0.0.1 4444\n",
+                "  %sserver 4444\n"
+                "  %sclient 127.0.0.1 4444\n",
                 progname.data(),
                 progname.data());
 }
