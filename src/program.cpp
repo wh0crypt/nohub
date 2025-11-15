@@ -12,6 +12,8 @@
 
 #include "program.h"
 
+#include <fstream>
+#include <sstream>
 #include <vector>
 
 namespace program {
@@ -23,6 +25,19 @@ void parse_arguments(int argc, char **argv, ProgramOptions &options) {
         if (*it == "--help" || *it == "-h") {
             options.show_help = true;
             return;
+        }
+
+        if (*it == "--config" || *it == "-c") {
+            ++it;
+            if (it == args.end()) {
+                options.error_msg  = "Expected configuration file after "
+                                     "--config/-c.";
+                options.error_code = 1;
+                return;
+            }
+
+            load_config_file(*it, options);
+            continue;
         }
 
         if (options.mode == MODE_UNDEFINED) {
@@ -72,22 +87,78 @@ void parse_arguments(int argc, char **argv, ProgramOptions &options) {
 }
 
 void print_usage(const std::string_view progname) {
-    std::printf("Usage: %s [-h | --help] <mode> <ip> <port>\n",
+    std::printf("Usage: %s [-h] [-c <file>] <mode> <ip> <port>\n",
                 progname.data());
 }
 
 void print_help(const std::string_view progname) {
     print_usage(progname);
     std::printf("\nOptions:\n"
-                "-h, --help\tShow this help message and exit.\n"
-                "<mode>\t\tSet the program mode (client or server).\n"
-                "<ip>\t\tSet the IP address to bind/connect to.\n"
-                "<port>\t\tSet the port number to bind/connect to.\n");
+                "-h, --help\t\tShow this help message and exit.\n"
+                "-c, --config <file>\tSpecify a configuration file.\n"
+                "<mode>\t\t\tSet the program mode (client or server).\n"
+                "<ip>\t\t\tSet the IP address to bind/connect to.\n"
+                "<port>\t\t\tSet the port number to bind/connect to.\n");
     std::printf("\nExamples:\n"
                 "  %sserver 4444\n"
-                "  %sclient 127.0.0.1 4444\n",
+                "  %sclient 127.0.0.1 4444\n"
+                "  %sclient -c my.conf\n",
+                progname.data(),
                 progname.data(),
                 progname.data());
+}
+
+std::unordered_map<std::string, std::string>
+read_config_file(const std::string_view filepath) {
+    std::unordered_map<std::string, std::string> config;
+    std::ifstream                                file(filepath.data());
+    if (!file.is_open()) {
+        return config;
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream line_stream(line);
+        std::string        key, value;
+        if (std::getline(line_stream, key, '=') &&
+            std::getline(line_stream, value)) {
+            config[key] = value;
+        }
+    }
+
+    return config;
+}
+
+void load_config_file(const std::string_view filepath,
+                      ProgramOptions        &options) {
+    auto config = read_config_file(filepath);
+    if (config.find("mode") != config.end()) {
+        std::string mode = config["mode"];
+        if (mode == "client") {
+            options.mode = MODE_CLIENT;
+        } else if (mode == "server") {
+            options.mode = MODE_SERVER;
+        } else {
+            options.error_msg  = "Invalid mode in config: " + mode;
+            options.error_code = 1;
+            return;
+        }
+    }
+
+    if (config.find("host") != config.end()) {
+        options.host = config["host"];
+    }
+
+    if (config.find("port") != config.end()) {
+        int port = std::stoi(config["port"]);
+        if (port < 0 || port > 65535) {
+            options.error_msg  = "Invalid port in config: " + config["port"];
+            options.error_code = 1;
+            return;
+        }
+
+        options.port = static_cast<std::uint16_t>(port);
+    }
 }
 
 } // namespace program
