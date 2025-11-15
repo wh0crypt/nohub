@@ -25,12 +25,6 @@ int main(int argc, char **argv) {
     struct program::ProgramOptions options;
     program::parse_arguments(argc, argv, options);
 
-    if (!options.error_msg.empty()) {
-        std::fprintf(stderr, "Error: %s\n", options.error_msg.c_str());
-        program::print_usage(argv[0]);
-        return options.error_code;
-    }
-
     if (options.show_help) {
         program::print_help(argv[0]);
         return EXIT_SUCCESS;
@@ -39,6 +33,12 @@ int main(int argc, char **argv) {
     if (argc < 7) {
         program::print_usage(argv[0]);
         return EXIT_FAILURE;
+    }
+
+    if (!options.error_msg.empty()) {
+        std::fprintf(stderr, "Error: %s\n", options.error_msg.c_str());
+        program::print_usage(argv[0]);
+        return options.error_code;
     }
 
     try {
