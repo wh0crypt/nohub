@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
         return EXIT_SUCCESS;
     }
 
-    if (argc < 7) {
+    if (argc == 1) {
         program::print_usage(argv[0]);
         return EXIT_FAILURE;
     }

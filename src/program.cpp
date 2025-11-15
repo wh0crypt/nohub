@@ -63,8 +63,10 @@ void parse_arguments(int argc, char **argv, ProgramOptions &options) {
         return;
     }
 
-    if (!options.show_help) {
-        options.error_msg  = "No mode provided.";
+    if (!options.show_help &&
+        (((options.mode == program::MODE_CLIENT) && (argc < 4)) ||
+         ((options.mode == program::MODE_SERVER) && (argc < 3)))) {
+        options.error_msg  = "Insufficient arguments provided.";
         options.error_code = 1;
     }
 }
