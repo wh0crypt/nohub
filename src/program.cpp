@@ -41,7 +41,7 @@ void parse_arguments(int argc, char **argv, ProgramOptions &options) {
             return;
         }
 
-        if (options.host.empty()) {
+        if (options.mode == MODE_CLIENT && options.host.empty()) {
             options.host = std::string(*it);
             continue;
         }

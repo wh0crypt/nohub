@@ -38,8 +38,15 @@ class Server {
     /// Stops the server if it is running.
     ~Server();
 
+    /// \brief Get the port number the server is bound to.
+    ///
+    /// \return The port number.
+    std::uint16_t port() const noexcept;
+
     /// \brief Run the server to accept incoming client connections.
-    void run() noexcept;
+    ///
+    /// \throws std::runtime_error if accepting a connection fails.
+    void run();
 
     /// \brief Stop the server and disconnect all clients.
     void stop() noexcept;
@@ -65,6 +72,7 @@ class Server {
                    int                    exclude_sock_fd = -1) noexcept;
 
     Socket                               server_socket_;
+    std::uint16_t                        port_;
     std::atomic<bool>                    is_running_;
     std::mutex                           clients_mutex_;
     std::vector<int>                     client_sock_fds_;

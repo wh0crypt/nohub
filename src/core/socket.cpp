@@ -110,6 +110,15 @@ void Socket::connect_to(const struct sockaddr_in &addr) {
     }
 }
 
+void Socket::bind_to(const sockaddr_in &addr) {
+    this->addr_ = addr;
+    if (::bind(this->sock_fd_,
+               reinterpret_cast<const struct sockaddr *>(&addr),
+               sizeof(addr)) < 0) {
+        throw std::runtime_error(std::string("bind: ") + std::strerror(errno));
+    }
+}
+
 ssize_t Socket::send_all(const std::string_view data) {
     ssize_t     total_sent = 0;
     const char *buf        = data.data();

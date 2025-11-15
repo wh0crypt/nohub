@@ -94,6 +94,12 @@ class Socket {
     /// \throws std::runtime_error if connect fails.
     void connect_to(const struct sockaddr_in &addr);
 
+    /// \brief Bind the socket to a specific address.
+    ///
+    /// \param addr sockaddr_in structure representing the address to bind to.
+    /// \throws std::runtime_error if bind fails.
+    void bind_to(const struct sockaddr_in &addr);
+
     /// \brief Send all data over the socket.
     ///
     /// \param data Data to send as a string view.

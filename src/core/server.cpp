@@ -29,6 +29,7 @@ Server::Server(std::uint16_t port) {
         this->server_socket_        = Socket(server_addr);
         this->server_socket_.listen();
         this->is_running_.store(true);
+        this->port_ = port;
     } catch (const std::exception &e) {
         throw std::runtime_error(std::string("server constructor: ") +
                                  e.what());
@@ -37,7 +38,12 @@ Server::Server(std::uint16_t port) {
 
 Server::~Server() { stop(); }
 
-void Server::run() noexcept { accept_loop(); }
+std::uint16_t Server::port() const noexcept { return this->port_; }
+
+void Server::run() {
+    std::printf("[*] Server running on port %d\n", this->port_);
+    accept_loop();
+}
 
 void Server::stop() noexcept {
     if (!this->is_running_.exchange(false)) {
