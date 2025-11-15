@@ -1,3 +1,4 @@
 core_sources = files(
-    'socket.cpp'
+    'socket.cpp',
+    'server.cpp'
 )
