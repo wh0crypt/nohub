@@ -112,12 +112,6 @@ class Socket {
     /// \brief Socket file descriptor.
     int sock_fd_;
 
-    /// \brief Validate if the port number is within the valid range.
-    ///
-    /// \param port Port number to validate.
-    /// \return True if valid, false otherwise.
-    bool is_port_valid(std::uint16_t port) const;
-
     /// \brief Create a sockaddr_in structure from an IP address and port.
     ///
     /// \param ip IP address as a string view.

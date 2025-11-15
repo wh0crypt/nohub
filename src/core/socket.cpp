@@ -152,17 +152,10 @@ std::string Socket::recv_line() {
     return output;
 }
 
-bool Socket::is_port_valid(std::uint16_t port) const { return port <= 65535; }
-
 sockaddr_in Socket::make_addr(const std::string_view ip,
                               std::uint16_t          port) const {
     if (ip.empty()) {
         throw std::invalid_argument("make_addr: empty string");
-    }
-
-    if (!is_port_valid(port)) {
-        throw std::invalid_argument("make_addr: invalid port " +
-                                    std::to_string(port));
     }
 
     struct sockaddr_in sock_addr{};

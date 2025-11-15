@@ -47,15 +47,15 @@ void parse_arguments(int argc, char **argv, ProgramOptions &options) {
         }
 
         if (options.port == 0) {
-            try {
-                options.port =
-                    static_cast<std::uint16_t>(std::stoul(std::string(*it)));
-                continue;
-            } catch (const std::exception &e) {
+            int port = std::stoi(std::string(*it));
+            if (port < 0 || port > 65535) {
                 options.error_msg  = "Invalid port: " + std::string(*it);
                 options.error_code = 1;
                 return;
             }
+
+            options.port = static_cast<std::uint16_t>(port);
+            continue;
         }
 
         options.error_msg  = "Unknown argument: " + std::string(*it);
