@@ -25,58 +25,37 @@ void parse_arguments(int argc, char **argv, ProgramOptions &options) {
             return;
         }
 
-        if (*it == "--mode" || *it == "-m") {
-            if (++it != args.end()) {
-                if (*it == "client") {
-                    options.mode = MODE_CLIENT;
-                    continue;
-                }
-
-                if (*it == "server") {
-                    options.mode = MODE_SERVER;
-                    continue;
-                }
-
-                options.error_msg  = "Invalid mode: " + std::string(*it);
-                options.error_code = 1;
-                return;
-            }
-
-            options.error_msg =
-                "No mode specified after " + std::string(*(it - 1));
-            options.error_code = 1;
-            return;
-        }
-
-        if (*it == "--ip" || *it == "-i") {
-            if (++it != args.end()) {
-                options.host = std::string(*it);
+        if (options.mode == MODE_UNDEFINED) {
+            if (*it == "client") {
+                options.mode = MODE_CLIENT;
                 continue;
             }
 
-            options.error_msg =
-                "No IP address specified after " + std::string(*(it - 1));
+            if (*it == "server") {
+                options.mode = MODE_SERVER;
+                continue;
+            }
+
+            options.error_msg  = "Invalid mode: " + std::string(*it);
             options.error_code = 1;
             return;
         }
 
-        if (*it == "--port" || *it == "-p") {
-            if (++it != args.end()) {
-                try {
-                    options.port = static_cast<std::uint16_t>(
-                        std::stoul(std::string(*it)));
-                    continue;
-                } catch (const std::exception &e) {
-                    options.error_msg  = "Invalid port: " + std::string(*it);
-                    options.error_code = 1;
-                    return;
-                }
-            }
+        if (options.host.empty()) {
+            options.host = std::string(*it);
+            continue;
+        }
 
-            options.error_msg =
-                "No port specified after " + std::string(*(it - 1));
-            options.error_code = 1;
-            return;
+        if (options.port == 0) {
+            try {
+                options.port =
+                    static_cast<std::uint16_t>(std::stoul(std::string(*it)));
+                continue;
+            } catch (const std::exception &e) {
+                options.error_msg  = "Invalid port: " + std::string(*it);
+                options.error_code = 1;
+                return;
+            }
         }
 
         options.error_msg  = "Unknown argument: " + std::string(*it);
@@ -84,14 +63,14 @@ void parse_arguments(int argc, char **argv, ProgramOptions &options) {
         return;
     }
 
-    if (!options.show_help && options.mode == MODE_UNDEFINED) {
+    if (!options.show_help) {
         options.error_msg  = "No mode provided.";
         options.error_code = 1;
     }
 }
 
 void print_usage(const std::string_view progname) {
-    std::printf("Usage: %s [-h | --help] -m <mode> -i <ip> -p <port>\n",
+    std::printf("Usage: %s [-h | --help] <mode> <ip> <port>\n",
                 progname.data());
 }
 
@@ -99,9 +78,14 @@ void print_help(const std::string_view progname) {
     print_usage(progname);
     std::printf("\nOptions:\n"
                 "-h, --help\t\tShow this help message and exit.\n"
-                "-m, --mode <mode>\tSet the program mode (client or server).\n"
-                "-i, --ip <ip>\t\tSet the IP address to bind/connect to.\n"
-                "-p, --port <port>\tSet the port number to bind/connect to.\n");
+                "<mode>\tSet the program mode (client or server).\n"
+                "<ip>\t\tSet the IP address to bind/connect to.\n"
+                "<port>\t\tSet the port number to bind/connect to.\n");
+    std::printf("\nExamples:\n"
+                "\t%sserver 4444\n"
+                "\t%sclient 127.0.0.1 4444\n",
+                progname.data(),
+                progname.data());
 }
 
 } // namespace program
