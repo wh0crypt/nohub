@@ -37,20 +37,15 @@ Server::Server(std::uint16_t port) {
 
 Server::~Server() { stop(); }
 
-void Server::run() noexcept {
-    this->server_thread_ = std::thread([this]() { accept_loop(); });
-}
+void Server::run() noexcept { accept_loop(); }
 
 void Server::stop() noexcept {
     if (!this->is_running_.exchange(false)) {
         return;
     }
 
-    if (this->server_thread_.joinable()) {
-        this->server_thread_.join();
-    }
-
     std::vector<std::thread> threads_to_join;
+
     {
         std::lock_guard<std::mutex> lock(this->clients_mutex_);
         for (auto &[sock_fd, thread] : this->client_threads_) {
@@ -75,6 +70,7 @@ void Server::accept_loop() {
             int         client_sock_fd = this->server_socket_.accept();
             std::thread client_thread(
                 &Server::client_loop, this, client_sock_fd);
+
             {
                 std::lock_guard<std::mutex> lock(this->clients_mutex_);
                 this->client_sock_fds_.push_back(client_sock_fd);

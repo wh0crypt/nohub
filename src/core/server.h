@@ -66,7 +66,6 @@ class Server {
 
     Socket                               server_socket_;
     std::atomic<bool>                    is_running_;
-    std::thread                          server_thread_;
     std::mutex                           clients_mutex_;
     std::vector<int>                     client_sock_fds_;
     std::unordered_map<int, std::thread> client_threads_;
