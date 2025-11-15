@@ -10,6 +10,8 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#include "core/client.h"
+#include "core/server.h"
 #include "program.h"
 
 #include <cstdlib>
@@ -36,6 +38,19 @@ int main(int argc, char **argv) {
 
     if (argc < 7) {
         program::print_usage(argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    try {
+        if (options.mode == program::MODE_CLIENT) {
+            core::Client client(options.host, options.port);
+            client.run_interactive();
+        } else if (options.mode == program::MODE_SERVER) {
+            core::Server server(options.port);
+            server.run();
+        }
+    } catch (const std::exception &e) {
+        std::fprintf(stderr, "main: %s\n", e.what());
         return EXIT_FAILURE;
     }
 
