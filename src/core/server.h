@@ -54,15 +54,15 @@ class Server {
     ///
     /// \param client_sock_fd The socket file descriptor of the connected
     /// client.
-    void client_loop(int client_sock_fd);
+    void client_loop(int client_sock_fd) noexcept;
 
     /// Broadcast a message to all connected clients.
     ///
     /// \param message The message to broadcast.
     /// \param exclude_sock_fd The socket file descriptor to exclude from
     /// broadcasting (default is -1, meaning no exclusion).
-    /// \throws std::runtime_error if sending fails.
-    void broadcast(const std::string_view message, int exclude_sock_fd = -1);
+    void broadcast(const std::string_view message,
+                   int                    exclude_sock_fd = -1) noexcept;
 
     Socket                               server_socket_;
     std::atomic<bool>                    is_running_;

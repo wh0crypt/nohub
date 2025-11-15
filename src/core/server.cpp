@@ -91,7 +91,7 @@ void Server::accept_loop() {
     }
 }
 
-void Server::client_loop(int client_sock_fd) {
+void Server::client_loop(int client_sock_fd) noexcept {
     try {
         Socket client_socket(client_sock_fd);
         while (this->is_running_.load()) {
@@ -132,7 +132,8 @@ void Server::client_loop(int client_sock_fd) {
     std::printf("[-] Client disconnected: fd=%d\n", client_sock_fd);
 }
 
-void Server::broadcast(const std::string_view message, int exclude_sock_fd) {
+void Server::broadcast(const std::string_view message,
+                       int                    exclude_sock_fd) noexcept {
     std::lock_guard<std::mutex> lock(this->clients_mutex_);
     for (int client_sock_fd : this->client_sock_fds_) {
         if (client_sock_fd != exclude_sock_fd) {
@@ -141,7 +142,9 @@ void Server::broadcast(const std::string_view message, int exclude_sock_fd) {
                                   message.size(),
                                   0);
             if (sent < 0) {
-                throw std::runtime_error("broadcast: send failed");
+                std::fprintf(stderr,
+                             "[-] broadcast: send failed (fd=%d)\n",
+                             client_sock_fd);
             }
         }
     }
