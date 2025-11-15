@@ -54,8 +54,11 @@ else
     cpp_args = cxx_args_debug
 endif
 
+# Dependencies
+thread_dep = dependency('threads')
+
 # --- Library ---
-lib_nohub = static_library('libnohub', sources, include_directories: incdir)
+lib_nohub = static_library('libnohub', sources, include_directories: incdir, dependencies: thread_dep)
 
 # --- Main executable ---
 executable(
@@ -71,5 +74,3 @@ executable(
 # if get_option('enable-tests')
 #   subdir('test')
 # else
-#   message('Tests are disabled. To enable, run Meson with -Denable-tests=true')
-# endif
