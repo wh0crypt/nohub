@@ -1,0 +1,45 @@
+name: build-dev
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'meson.build'
+      - 'src/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'meson.build'
+      - 'src/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install latest Meson
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade meson ninja
+
+      - name: Configure build
+        run: meson setup builddir --buildtype=release
+
+      - name: Compile project
+        run: meson compile -C builddir
